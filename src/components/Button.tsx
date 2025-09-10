@@ -1,44 +1,61 @@
-import { Pressable, PressableProps, Text } from "react-native";
+import { useTheme } from "@/contexts/ThemeContext";
 import React from "react";
+import { Pressable, PressableProps, Text } from "react-native";
 import { cn } from "../utils/cn";
 
 type ButtonProps = {
   title: string;
   onPress?: () => void;
-  theme?: "primary" | "secondary" | "tertiary";
   disabled?: boolean;
+  className?: string;
 } & PressableProps;
 
-// from SDK 53 (React 19) onwards, forwardRef is no longer needed, as ref is now a prop
 export function Button({
   title,
   onPress,
-  theme = "primary",
-  disabled,
+  disabled = false,
+  className,
   ...rest
 }: ButtonProps) {
+  const { colors } = useTheme();
+
   return (
     <Pressable
       onPress={onPress}
-      className={cn(
-        "flex-row items-center justify-center rounded-md px-5 py-3 mb-4 border",
-        theme === "primary" && "bg-[#007AFF] border-[#007AFF]",
-        theme === "secondary" && "bg-white border-gray-300",
-        theme === "tertiary" && "bg-transparent border-transparent",
-        disabled && "opacity-50",
-      )}
       disabled={disabled}
+      className={cn(
+        "w-[280px] h-14 px-3 flex items-center justify-center rounded-md",
+        "font-medium text-lg leading-7",
+        disabled && "opacity-40",
+        className
+      )}
+      style={({ pressed }) => [
+        {
+          backgroundColor: pressed
+            ? colors.primaryDark
+            : disabled
+              ? colors.primary
+              : colors.primary,
+        },
+        {
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 8,
+          elevation: 4,
+        },
+      ]}
       {...rest}
     >
       <Text
-        className={cn(
-          "font-semibold text-lg tracking-wider",
-          theme === "secondary" && "text-black",
-          theme === "primary" && "text-white",
-          theme === "tertiary" && "text-gray-800",
-        )}
+        style={{
+          fontFamily: "Inter_500Medium",
+          fontSize: 18,
+          lineHeight: 28,
+          color: colors.buttonText,
+        }}
       >
-        {title} {disabled}
+        {title}
       </Text>
     </Pressable>
   );
